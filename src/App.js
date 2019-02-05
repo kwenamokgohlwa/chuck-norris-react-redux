@@ -62,7 +62,7 @@ class App extends React.Component {
 
 class CategoryInput extends React.Component {
   state = {
-    value: "",
+    activeCategory: "Select a Category",
     categories: ["Science", "Religeon"]
   };
 
@@ -75,18 +75,29 @@ class CategoryInput extends React.Component {
 
   onChange = e => {
     this.setState({
-      value: e.target.value
+      activeCategory: e.target.textContent
     });
   };
 
   handleSubmit = () => {
-    store.dispatch({
-      type: "ADD_FACT",
-      fact: this.state.value
-    });
-    this.setState({
-      value: ""
-    });
+    const url =
+      "https://api.chucknorris.io/jokes/random?category={" +
+      this.state.activeCategory +
+      "}";
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        //store.dispatch({
+        // type: "ADD_FACT",
+        //  fact: data
+        // });
+
+        // this.setState({
+        //  activeCategry: "Select a Category"
+        // });
+        console.log(data);
+      })
+      .catch(error => console.warn(error));
   };
 
   render() {
@@ -101,7 +112,7 @@ class CategoryInput extends React.Component {
         <form>
           <div className="ui compact menu">
             <div className="ui simple dropdown item">
-              Dropdown
+              {this.state.activeCategory}
               <i className="dropdown icon" />
               <div className="menu">{categories}</div>
             </div>
