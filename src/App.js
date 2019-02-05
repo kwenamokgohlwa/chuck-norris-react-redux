@@ -38,7 +38,6 @@ function reducer(state, action) {
 }
 
 const initialState = {
-  categories: ["Science", "Sport", "Religeon"],
   facts: []
 };
 
@@ -51,12 +50,11 @@ class App extends React.Component {
 
   render() {
     const facts = store.getState().facts;
-    const categories = store.getState().categories;
 
     return (
       <div className="ui segment">
+        <CategoryInput />
         <FactView facts={facts} />
-        <CategoryInput categories={categories} />
       </div>
     );
   }
@@ -64,8 +62,16 @@ class App extends React.Component {
 
 class CategoryInput extends React.Component {
   state = {
-    value: ""
+    value: "",
+    categories: ["Science", "Religeon"]
   };
+
+  componentDidMount() {
+    fetch("https://api.chucknorris.io/jokes/categories")
+      .then(response => response.json())
+      .then(data => this.setState({ categories: data }))
+      .catch(error => console.warn(error));
+  }
 
   onChange = e => {
     this.setState({
@@ -84,7 +90,7 @@ class CategoryInput extends React.Component {
   };
 
   render() {
-    const categories = this.props.categories.map((category, index) => (
+    const categories = this.state.categories.map((category, index) => (
       <div className="item" onChange={this.onChange} key={index}>
         {category}
       </div>
@@ -93,11 +99,11 @@ class CategoryInput extends React.Component {
     return (
       <div className="ui input">
         <form>
-          <div class="ui compact menu">
-            <div class="ui simple dropdown item">
+          <div className="ui compact menu">
+            <div className="ui simple dropdown item">
               Dropdown
-              <i class="dropdown icon" />
-              <div class="menu">{categories}</div>
+              <i className="dropdown icon" />
+              <div className="menu">{categories}</div>
             </div>
           </div>
 
