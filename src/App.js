@@ -37,6 +37,15 @@ function reducer(state, action) {
   }
 }
 
+function test() {
+  fetch("https://api.chucknorris.io/jokes/random?category={dev}")
+    .then(response => response.json())
+    .then(data => console.log(data.value))
+    .catch(error => console.warn(error));
+}
+
+test();
+
 const initialState = {
   facts: []
 };
@@ -63,7 +72,12 @@ class App extends React.Component {
 class CategoryInput extends React.Component {
   state = {
     activeCategory: "Select a Category",
-    categories: ["Science", "Religeon"]
+    categories: ["Science", "Religeon"],
+    url:
+      "https://api.chucknorris.io/jokes/random?category={" +
+      this.activeCategory +
+      "}",
+    submit: false
   };
 
   componentDidMount() {
@@ -73,36 +87,40 @@ class CategoryInput extends React.Component {
       .catch(error => console.warn(error));
   }
 
-  onChange = e => {
+  componentDidUpdate() {
+    if (this.state.sumbit === true) {
+      fetch(this.state.url)
+        .then(response => response.json())
+        .then(data => {
+          store.dispatch({
+            type: "ADD_FACT",
+            fact: data
+          });
+
+          this.setState({
+            activeCategry: "Select a Category",
+            submit: false
+          });
+        })
+        .catch(error => console.warn(error));
+    }
+  }
+
+  onClick = e => {
     this.setState({
       activeCategory: e.target.textContent
     });
   };
 
   handleSubmit = () => {
-    const url =
-      "https://api.chucknorris.io/jokes/random?category={" +
-      this.state.activeCategory +
-      "}";
-    fetch(url)
-      .then(response => response.json())
-      .then(data => {
-        //store.dispatch({
-        // type: "ADD_FACT",
-        //  fact: data
-        // });
-
-        // this.setState({
-        //  activeCategry: "Select a Category"
-        // });
-        console.log(data);
-      })
-      .catch(error => console.warn(error));
+    this.setState({
+      submit: true
+    });
   };
 
   render() {
     const categories = this.state.categories.map((category, index) => (
-      <div className="item" onChange={this.onChange} key={index}>
+      <div className="item" onClick={e => this.onClick(e)} key={index}>
         {category}
       </div>
     ));
@@ -119,7 +137,7 @@ class CategoryInput extends React.Component {
           </div>
 
           <button
-            onClick={this.handleSubmit}
+            onClick={() => this.handleSubmit()}
             className="ui primary button"
             type="submit"
             value="Submit"
