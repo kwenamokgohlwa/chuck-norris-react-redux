@@ -1,3 +1,4 @@
+import axios from "axios";
 import React from "react";
 
 function createStore(reducer, initialState) {
@@ -37,15 +38,6 @@ function reducer(state, action) {
   }
 }
 
-function test() {
-  fetch("https://api.chucknorris.io/jokes/random?category={dev}")
-    .then(response => response.json())
-    .then(data => console.log(data.value))
-    .catch(error => console.warn(error));
-}
-
-test();
-
 const initialState = {
   facts: []
 };
@@ -72,12 +64,7 @@ class App extends React.Component {
 class CategoryInput extends React.Component {
   state = {
     activeCategory: "Select a Category",
-    categories: ["Science", "Religeon"],
-    url:
-      "https://api.chucknorris.io/jokes/random?category={" +
-      this.activeCategory +
-      "}",
-    submit: false
+    categories: ["Science", "Religeon"]
   };
 
   componentDidMount() {
@@ -87,25 +74,6 @@ class CategoryInput extends React.Component {
       .catch(error => console.warn(error));
   }
 
-  componentDidUpdate() {
-    if (this.state.sumbit === true) {
-      fetch(this.state.url)
-        .then(response => response.json())
-        .then(data => {
-          store.dispatch({
-            type: "ADD_FACT",
-            fact: data
-          });
-
-          this.setState({
-            activeCategry: "Select a Category",
-            submit: false
-          });
-        })
-        .catch(error => console.warn(error));
-    }
-  }
-
   onClick = e => {
     this.setState({
       activeCategory: e.target.textContent
@@ -113,9 +81,21 @@ class CategoryInput extends React.Component {
   };
 
   handleSubmit = () => {
-    this.setState({
-      submit: true
-    });
+    if (this.state.activeCategory !== "Select a Category") {
+      axios
+        .get("https://api.chucknorris.io/jokes/random")
+        .then(response => {
+          store.dispatch({
+            type: "ADD_FACT",
+            fact: response.data.value
+          });
+
+          this.setState({ activeCategory: "Select a Category" });
+        })
+        .catch(error => {
+          console.warn(error);
+        });
+    }
   };
 
   render() {
@@ -127,24 +107,22 @@ class CategoryInput extends React.Component {
 
     return (
       <div className="ui input">
-        <form>
-          <div className="ui compact menu">
-            <div className="ui simple dropdown item">
-              {this.state.activeCategory}
-              <i className="dropdown icon" />
-              <div className="menu">{categories}</div>
-            </div>
+        <div className="ui compact menu">
+          <div className="ui simple dropdown item">
+            {this.state.activeCategory}
+            <i className="dropdown icon" />
+            <div className="menu">{categories}</div>
           </div>
+        </div>
 
-          <button
-            onClick={() => this.handleSubmit()}
-            className="ui primary button"
-            type="submit"
-            value="Submit"
-          >
-            Submit
-          </button>
-        </form>
+        <button
+          onClick={() => this.handleSubmit()}
+          className="ui primary button"
+          type="submit"
+          value="Submit"
+        >
+          Submit
+        </button>
       </div>
     );
   }
