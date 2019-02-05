@@ -8,8 +8,7 @@
     "react-dom": "16.7.0",
     "react-redux": "5.0.6",
     "redux": "3.6.0",
-    "semantic-ui": "2.4.2",
-    "uuid": "3.0.1"
+    "semantic-ui": "2.4.2"
   },
   "devDependencies": {
     "chromedriver": "2.37.0",
@@ -18,7 +17,6 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "e2e": "nightwatch",
     "run-e2e": "concurrently -s first -k \"npm start\" \"sleep 15; npm run e2e\"",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
@@ -26,5 +24,5 @@
   },
   "browserslist": [">0.2%", "not dead", "not ie <= 11", "not op_mini all"],
   "keywords": [],
-  "description": ""
+  "description": "A React App with Redux, built to consume the ChuckNorris.io API"
 }

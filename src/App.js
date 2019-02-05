@@ -53,7 +53,7 @@ class App extends React.Component {
     const facts = store.getState().facts;
 
     return (
-      <div className="ui segment">
+      <div className="ui">
         <CategoryInput />
         <FactView facts={facts} />
       </div>
